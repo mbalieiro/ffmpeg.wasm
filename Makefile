@@ -1,4 +1,4 @@
-all: dev
+all: dev-st
 
 MT_FLAGS := -sUSE_PTHREADS -pthread
 
@@ -10,11 +10,11 @@ PROD_CFLAGS := -O3 -msimd128
 PROD_MT_CFLAGS := $(PROD_CFLAGS) $(MT_FLAGS)
 
 clean:
-	rm -rf ./packages/core$(PKG_SUFFIX)/dist
+	rm -rf ./packages/core-st/dist
+	rm -rf ./packages/core-mt/dist
 
-.PHONY: build
 build:
-	make clean PKG_SUFFIX="$(PKG_SUFFIX)"
+	make clean
 	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
 	EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" \
 	FFMPEG_ST="$(FFMPEG_ST)" \
@@ -30,6 +30,7 @@ build:
 
 build-st:
 	make build \
+		PKG_SUFFIX=-st \
 		FFMPEG_ST=yes
 
 build-mt:
@@ -37,13 +38,13 @@ build-mt:
 		PKG_SUFFIX=-mt \
 		FFMPEG_MT=yes
 
-dev:
+dev-st:
 	make build-st EXTRA_CFLAGS="$(DEV_CFLAGS)" EXTRA_ARGS="$(DEV_ARGS)"
 
 dev-mt:
 	make build-mt EXTRA_CFLAGS="$(DEV_MT_CFLAGS)" EXTRA_ARGS="$(DEV_ARGS)"
 
-prd:
+prd-st:
 	make build-st EXTRA_CFLAGS="$(PROD_CFLAGS)"
 
 prd-mt:
