@@ -4,10 +4,10 @@ MT_FLAGS := -sUSE_PTHREADS -pthread
 
 DEV_ARGS := --progress=plain
 
-DEV_CFLAGS := --profiling
-DEV_MT_CFLAGS := $(DEV_CFLAGS) $(MT_FLAGS)
-PROD_CFLAGS := -O3 -msimd128
-PROD_MT_CFLAGS := $(PROD_CFLAGS) $(MT_FLAGS)
+DEV_ST_CFLAGS := --profiling
+DEV_MT_CFLAGS := $(DEV_ST_CFLAGS) $(MT_FLAGS)
+PROD_ST_CFLAGS := -O3 -msimd128
+PROD_MT_CFLAGS := $(PROD_ST_CFLAGS) $(MT_FLAGS)
 
 clean:
 	rm -rf ./packages/core-st/dist
@@ -20,6 +20,7 @@ build:
 	FFMPEG_ST="$(FFMPEG_ST)" \
 	FFMPEG_MT="$(FFMPEG_MT)" \
 		docker buildx build \
+			--target final_image \
 			--build-arg EXTRA_CFLAGS \
 			--build-arg EXTRA_LDFLAGS \
 			--build-arg FFMPEG_MT \
@@ -39,13 +40,13 @@ build-mt:
 		FFMPEG_MT=yes
 
 dev-st:
-	make build-st EXTRA_CFLAGS="$(DEV_CFLAGS)" EXTRA_ARGS="$(DEV_ARGS)"
+	make build-st EXTRA_CFLAGS="$(DEV_ST_CFLAGS)" EXTRA_ARGS="$(DEV_ARGS)"
 
 dev-mt:
 	make build-mt EXTRA_CFLAGS="$(DEV_MT_CFLAGS)" EXTRA_ARGS="$(DEV_ARGS)"
 
 prd-st:
-	make build-st EXTRA_CFLAGS="$(PROD_CFLAGS)"
+	make build-st EXTRA_CFLAGS="$(PROD_ST_CFLAGS)"
 
 prd-mt:
 	make build-mt EXTRA_CFLAGS="$(PROD_MT_CFLAGS)"

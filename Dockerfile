@@ -200,5 +200,5 @@ RUN mkdir -p /src/dist/esm && bash -x /src/build.sh \
       -o dist/esm/ffmpeg-core.js
 
 # Export ffmpeg-core.wasm to dist/, use `docker buildx build -o . .` to get assets
-FROM scratch AS exportor
+FROM scratch AS final_image
 COPY --from=ffmpeg-wasm-builder /src/dist /dist

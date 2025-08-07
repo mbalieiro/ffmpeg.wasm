@@ -4,10 +4,10 @@ SET MT_FLAGS=-sUSE_PTHREADS -pthread
 
 SET DEV_ARGS=--progress=plain
 
-SET DEV_CFLAGS=--profiling
-SET DEV_MT_CFLAGS=%DEV_CFLAGS% %MT_FLAGS%
-SET PROD_CFLAGS=-O3 -msimd128
-SET PROD_MT_CFLAGS=%PROD_CFLAGS% %MT_FLAGS%
+SET DEV_ST_CFLAGS=--profiling
+SET DEV_MT_CFLAGS=%DEV_ST_CFLAGS% %MT_FLAGS%
+SET PROD_ST_CFLAGS=-O3 -msimd128
+SET PROD_MT_CFLAGS=%PROD_ST_CFLAGS% %MT_FLAGS%
 
 IF /I "%1"=="clean" GOTO clean
 IF /I "%1"=="build" GOTO build
@@ -30,7 +30,7 @@ GOTO error
 
 :build
 	CALL make clean
-	docker buildx build --build-arg EXTRA_CFLAGS="%EXTRA_CFLAGS%" --build-arg EXTRA_LDFLAGS="%EXTRA_LDFLAGS%" --build-arg FFMPEG_MT="%FFMPEG_MT%" --build-arg FFMPEG_ST="%FFMPEG_ST%" -o ./packages/core%PKG_SUFFIX% "%EXTRA_ARGS%" .
+	docker buildx build --target final_image --build-arg EXTRA_CFLAGS="%EXTRA_CFLAGS%" --build-arg EXTRA_LDFLAGS="%EXTRA_LDFLAGS%" --build-arg FFMPEG_MT="%FFMPEG_MT%" --build-arg FFMPEG_ST="%FFMPEG_ST%" -o ./packages/core%PKG_SUFFIX% "%EXTRA_ARGS%" .
 	GOTO :EOF
 
 :build-st
@@ -48,7 +48,7 @@ GOTO error
 	GOTO :EOF
 
 :dev-st
-	SET EXTRA_CFLAGS=%DEV_CFLAGS%
+	SET EXTRA_CFLAGS=%DEV_ST_CFLAGS%
 	SET EXTRA_ARGS=%DEV_ARGS%
 	CALL make build-st
 	GOTO :EOF
@@ -60,7 +60,7 @@ GOTO error
 	GOTO :EOF
 
 :prd-st
-	SET EXTRA_CFLAGS=%PROD_CFLAGS%
+	SET EXTRA_CFLAGS=%PROD_ST_CFLAGS%
 	CALL make build-st
 	GOTO :EOF
 
